@@ -5,7 +5,7 @@ Stage 0: Preflight Setup
 
 [ ] Set AWS billing alarm at $5 and tag all resources (project=gpu-e2e, owner=Nancy)
 
-[ ] Scaffold GitHub repo folders (infra/, k8s/, model/, tests/, ci/, docs/)
+ [x] Scaffold GitHub repo folders (infra/, k8s/, model/, tests/, ci/, docs/)
 
 [ ] Define KPIs (latency P50/P95, throughput, GPU utilization, error rate, cost)
 
