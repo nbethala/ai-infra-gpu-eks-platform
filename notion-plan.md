@@ -1,20 +1,20 @@
-# Project 1 Checklist 
+# Project 1 Checklist : 
 
-Stage 0: Preflight Setup
-[ ] Create AWS IAM role/user with least privilege (EKS, EC2, IAM, ECR, ALB, S3)
+Stage 0: setup IAM roles, Github repo, AWS alarms
+[x] Create AWS IAM role/user with least privilege (EKS, EC2, IAM, ECR, ALB, S3)
 
-[ ] Set AWS billing alarm at $5 and tag all resources (project=gpu-e2e, owner=Nancy)
+[x] Set AWS billing alarm at $5 and tag all resources (project=gpu-e2e, owner=Nancy)
 
- [x] Scaffold GitHub repo folders (infra/, k8s/, model/, tests/, ci/, docs/)
+[x] Scaffold GitHub repo folders (infra/, k8s/, model/, tests/, ci/, docs/)
 
-[ ] Define KPIs (latency P50/P95, throughput, GPU utilization, error rate, cost)
+[ ? ] Define KPIs (latency P50/P95, throughput, GPU utilization, error rate, cost)
 
-Stage 1: Infrastructure Provisioning
-[ ] Build VPC with private/public subnets + NAT gateway (Terraform)
+Stage 1: Infrastructure Provisioning - Terraform
+[x] Build VPC with private/public subnets + NAT gateway (Terraform)
 
-[ ] Provision EKS cluster control plane (Terraform)
+[x] Provision EKS cluster control plane (Terraform)
 
-[ ] Create IAM role for ALB ingress controller (IRSA)
+[x] Create IAM role for ALB ingress controller (IRSA)
 
 [ ] Validate cluster connectivity (kubectl get nodes)
 

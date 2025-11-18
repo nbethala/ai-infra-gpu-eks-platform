@@ -1,0 +1,14 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    { "Effect": "Allow", "Action": ["sts:GetCallerIdentity"], "Resource": "*" },
+    { "Effect": "Allow", "Action": ["eks:CreateCluster","eks:DeleteCluster","eks:Describe*","eks:List*","eks:CreateNodegroup","eks:DeleteNodegroup"], "Resource": "*" },
+    { "Effect": "Allow", "Action": ["ec2:Describe*","ec2:CreateTags","ec2:DeleteTags","ec2:RunInstances","ec2:TerminateInstances"], "Resource": "*" },
+    { "Effect": "Allow", "Action": ["iam:PassRole","iam:GetRole","iam:CreateServiceLinkedRole"], "Resource": "*" },
+    { "Effect": "Allow", "Action": ["ecr:CreateRepository","ecr:DeleteRepository","ecr:BatchGetImage","ecr:PutImage","ecr:GetAuthorizationToken","ecr:InitiateLayerUpload","ecr:UploadLayerPart","ecr:CompleteLayerUpload"], "Resource": "*" },
+    { "Effect": "Allow", "Action": ["s3:CreateBucket","s3:PutBucketLifecycleConfiguration","s3:PutObject","s3:DeleteObject","s3:ListBucket"], "Resource": "*" },
+    { "Effect": "Allow", "Action": ["cloudformation:CreateStack","cloudformation:UpdateStack","cloudformation:DeleteStack","cloudformation:DescribeStacks"], "Resource": "*" },
+    { "Effect": "Allow", "Action": ["elasticloadbalancing:CreateLoadBalancer","elasticloadbalancing:CreateTargetGroup","elasticloadbalancing:RegisterTargets","elasticloadbalancing:DeleteLoadBalancer","elasticloadbalancing:Describe*"], "Resource": "*" },
+    { "Effect": "Allow", "Action": ["logs:CreateLogGroup","logs:PutRetentionPolicy","logs:CreateLogStream","logs:PutLogEvents"], "Resource": "*" }
+  ]
+}
