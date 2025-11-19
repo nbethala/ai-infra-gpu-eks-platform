@@ -1,6 +1,3 @@
-provider "aws" {
-  region = var.region
-}
 
 module "vpc" {
   source  = "./modules/vpc"
@@ -31,4 +28,20 @@ module "eks" {
   cluster_name       = var.cluster_name
   private_subnet_ids = module.vpc.private_subnet_ids  #output from vpc module
   cluster_role_arn   = module.iam.cluster_role_arn  #output from iam module
+}
+
+module "gpu_node_group" {
+  source        = "./modules/gpu_node_group"
+  cluster_name  = module.eks.cluster_name
+  node_role_arn = module.iam.node_role_arn
+  private_subnet_ids    = module.vpc.private_subnet_ids
+  project       = var.project
+  owner         = var.owner
+}
+
+module "nvidia_plugin" {
+  source = "./modules/nvidia_plugin"
+  providers = {
+    helm = helm
+  }
 }

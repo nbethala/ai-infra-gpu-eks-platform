@@ -102,3 +102,54 @@ resource "aws_iam_role_policy_attachment" "alb_attach" {
   role       = aws_iam_role.alb_controller.name
   policy_arn = aws_iam_policy.alb_policy.arn
 }
+
+# -----------------------------
+# EKS Controller Role (ARN)
+# -----------------------------
+resource "aws_iam_role" "eks_cluster_role" {
+  name               = "${var.cluster_name}-eks-cluster-role"
+  assume_role_policy = file("${path.root}/policies/eks.json")
+
+  tags = {
+    project = var.project
+    owner   = var.owner
+  }
+}
+
+resource "aws_iam_role_policy_attachment" "eks_cluster_policy" {
+  role       = aws_iam_role.eks_cluster_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
+}
+
+resource "aws_iam_role_policy_attachment" "eks_service_policy" {
+  role       = aws_iam_role.eks_cluster_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSServicePolicy"
+}
+
+# -----------------------------
+# EKS GPU node group (ARN)
+# -----------------------------
+resource "aws_iam_role" "eks_node_role" {
+  name               = "${var.cluster_name}-node-role"
+  assume_role_policy = file("${path.root}/policies/node-trust-policy.json")
+
+  tags = {
+    project = var.project
+    owner   = var.owner
+  }
+}
+
+resource "aws_iam_role_policy_attachment" "eks_worker_node" {
+  role       = aws_iam_role.eks_node_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
+}
+
+resource "aws_iam_role_policy_attachment" "ecr_readonly" {
+  role       = aws_iam_role.eks_node_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+}
+
+resource "aws_iam_role_policy_attachment" "cloudwatch_agent" {
+  role       = aws_iam_role.eks_node_role.name
+  policy_arn = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
+}

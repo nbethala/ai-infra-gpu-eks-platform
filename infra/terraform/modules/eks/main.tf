@@ -1,4 +1,4 @@
-resource "aws_eks_cluster" "this" {
+resource "aws_eks_cluster" "gpu_e2e" {
   name     = var.cluster_name
   role_arn = var.cluster_role_arn
 
