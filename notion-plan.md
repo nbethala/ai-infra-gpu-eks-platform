@@ -1,81 +1,82 @@
-# Project 1 Checklist : 
+# 🧱 Project Plan: AI Infra GPU EKS Platform
 
-Stage 0: setup IAM roles, Github repo, AWS alarms
-[x] Create AWS IAM role/user with least privilege (EKS, EC2, IAM, ECR, ALB, S3)
+## Stage 0: Bootstrap
+✅ IAM roles with least privilege
+✅ AWS billing alarm + tagging hygiene
+✅ GitHub repo scaffold (infra/, k8s/, model/, tests/, ci/, docs/)
+☐ Define KPIs: latency (P50/P95), throughput, GPU utilization, error rate, cost
 
-[x] Set AWS billing alarm at $5 and tag all resources (project=gpu-e2e, owner=Nancy)
+## Stage 1: Infrastructure Provisioning (Terraform)
+✅ VPC with public/private subnets + NAT
+✅ EKS control plane
+✅ IAM role for ALB controller (IRSA)
+[] Validate cluster connectivity (kubectl get nodes) 
+### TO-DO :  
+ - plan: terraform plan -var-file=terraform.tfvars
+ - Apply: terraform apply -var-file=terraform.tfvars
+ - update kubeconfig: aws eks update-kubeconfig --region <your-region> --name <your-cluster-name>
+ - validate cluster connectivity: kubectl get nodes
 
-[x] Scaffold GitHub repo folders (infra/, k8s/, model/, tests/, ci/, docs/)
+## Stage 2: GPU Node Group & Scheduling
+✅ Spot GPU node group (e.g., g4dn.xlarge) # setup infra via module 
+x Taints: key=gpu, effect=NoSchedule # not needed yet
+✅ Labels: accelerator=nvidia # setup in the node group module
+✅ NVIDIA device plugin via Helm provider using - Terraform
+☐ Verify GPU visibility (kubectl describe node | grep nvidia.com/gpu)
 
-[ ? ] Define KPIs (latency P50/P95, throughput, GPU utilization, error rate, cost)
+## Stage 3: Triton Model Serving
+[x] Package ONNX model (ResNet50 or MobileNet)
+[x] Build + push Triton Docker image to ECR (AWS)
+[x] Deploy Triton via Helm (with GPU scheduling + probes)
+[x]ALB ingress with HTTPS + health checks ( optional: if exposing dashboards extrenally then add an ALB ingress)
+☐ Smoke test inference endpoint
 
-Stage 1: Infrastructure Provisioning - Terraform
-[x] Build VPC with private/public subnets + NAT gateway (Terraform)
+## Stage 4: Observability Stack
+☐ Prometheus Operator via Helm
+☐ NVIDIA DCGM exporter for GPU metrics
+☐ Grafana dashboards (GPU, latency, throughput)
+☐ Annotate dashboards with “Load Test Start/Stop”
 
-[x] Provision EKS cluster control plane (Terraform)
+## Stage 5: Synthetic Load Testing
+☐ Define test scenarios (Smoke, Spike, Soak)
+☐ Run Locust/k6 headless (laptop or EC2)
+☐ Capture latency, throughput, error %, GPU utilization
+☐ Export results (CSV/JSON) + Grafana snapshots
+☐ Annotate events (scale-ups, throttling, errors)
 
-[x] Create IAM role for ALB ingress controller (IRSA)
+## Stage 6: Teardown & Cost Audit
+☐ terraform destroy all infra
+☐ Verify no leftover resources
+☐ AWS Cost Explorer: GPU hours, spot savings, total spend
+☐ Document in docs/cost-audit.md
 
-[ ] Validate cluster connectivity (kubectl get nodes)
+## Stage 7: Evidence Pack
+☐ Write README.md (Problem → Architecture → Run → KPIs → Cost → Teardown)
+☐ Architecture diagram (VPC → EKS → GPU → Triton → ALB → Prometheus/Grafana)
+☐ Grafana screenshots + load test graphs
+☐ One-pager case study
+☐ (Optional) Publish blog/LinkedIn post
 
-Stage 2: GPU Node Group & Scheduling
-[ ] Add spot GPU node group (g4dn.xlarge) with max price cap
 
-[ ] Apply taints (key=gpu, effect=NoSchedule) to GPU nodes
 
-[ ] Label GPU nodes (accelerator=nvidia)
 
-[ ] Deploy NVIDIA device plugin via Helm
+🧱 Stage-by-Stage Breakdown with Tools
+Stage	Purpose	Tools & Technologies Used
+Stage 0: Bootstrap	Setup IAM, billing guardrails, repo structure	- AWS IAM (least privilege roles)<br>- AWS Budgets (billing alarm)<br>- GitHub (repo scaffold: infra/, k8s/, model/, etc.)
+Stage 1: Infra Provisioning	Build VPC, EKS control plane, IRSA	- Terraform (VPC, subnets, NAT, EKS)<br>- AWS IAM (IRSA for ALB controller)<br>- kubectl (cluster validation)
+Stage 2: GPU Node Group & Scheduling	Add GPU nodes, taints, labels, device plugin	- Terraform (GPU node group)<br>- Kubernetes (taints, labels)<br>- Helm (NVIDIA device plugin)<br>- kubectl (GPU visibility check)
+Stage 3: Triton Model Serving	Deploy ONNX model with GPU inference	- ONNX (ResNet50/MobileNet)<br>- Docker (Triton image)<br>- AWS ECR (image registry)<br>- Helm (Triton deployment)<br>- AWS ALB (ingress)<br>- curl (inference smoke test)
+Stage 4: Observability Stack	Monitor GPU, latency, throughput	- Helm (Prometheus Operator)<br>- NVIDIA DCGM exporter<br>- Grafana (dashboards)<br>- Kubernetes annotations
+Stage 5: Synthetic Load Testing	Stress test inference endpoint	- Locust or k6 (load generation)<br>- Grafana (metrics capture)<br>- CSV/JSON exports<br>- Event annotations
+Stage 6: Teardown & Cost Audit	Clean up infra, report spend	- Terraform (destroy)<br>- AWS Cost Explorer<br>- Manual verification (EKS, EC2, ALB, S3)<br>- Markdown (docs/cost-audit.md)
+Stage 7: Evidence Pack	Document architecture, results, teardown	- Markdown (README.md, case study)<br>- Diagrams (draw.io, Excalidraw, or Mermaid)<br>- Screenshots (Grafana, load test)<br>- Optional: LinkedIn/blog post
+🧠 Optional KPIs to Track
+Latency: P50, P95, P99
 
-[ ] Verify GPU resources (kubectl describe node | grep nvidia.com/gpu)
+Throughput: requests/sec
 
-Stage 3: Triton Model Serving
-[ ] Package sample ONNX model (ResNet50/MobileNet)
+GPU Utilization: % usage
 
-[ ] Build Triton Docker image and push to ECR
+Error Rate: 4xx/5xx %
 
-[ ] Deploy Triton via Helm with GPU scheduling + probes
-
-[ ] Configure ALB ingress with HTTPS + health checks
-
-[ ] Smoke test inference endpoint (curl /v2/models/<name>/infer)
-
-Stage 4: Observability Stack
-[ ] Deploy Prometheus Operator via Helm
-
-[ ] Install NVIDIA DCGM exporter for GPU metrics
-
-[ ] Deploy Grafana and import dashboards (GPU, latency, throughput)
-
-[ ] Annotate dashboards with “Load Test Start/Stop”
-
-Stage 5: Synthetic Load Testing
-[ ] Define test scenarios (Smoke, Spike, Soak)
-
-[ ] Run Locust/k6 headless from laptop or EC2 Free Tier
-
-[ ] Capture latency P50/P95/P99, throughput, error %, GPU utilization
-
-[ ] Export CSV/JSON results + Grafana snapshots
-
-[ ] Annotate events (scale-ups, throttling, errors)
-
-Stage 6: Teardown & Cost Audit
-[ ] Run terraform destroy to remove cluster, nodes, ALB, ECR images
-
-[ ] Verify no leftover resources (EKS, EC2, ALB, S3)
-
-[ ] Use AWS Cost Explorer to report GPU hours, spot savings, total spend
-
-[ ] Document in docs/cost-audit.md
-
-Stage 7: Evidence Pack & Recruiter Narrative
-[ ] Write README.md (Problem → Architecture → Run → KPIs → Cost → Teardown)
-
-[ ] Create architecture diagram (VPC → EKS → GPU → Triton → ALB → Prometheus/Grafana)
-
-[ ] Capture Grafana screenshots + load test graphs
-
-[ ] Draft one‑pager case study with results + teardown discipline
-
-[ ] Optional: Publish blog/LinkedIn post with visuals 
+Cost: total spend, spot savings, GPU hours

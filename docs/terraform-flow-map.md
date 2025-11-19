@@ -33,3 +33,20 @@ infra/terraform/
  ### Variable declaratiom
 - Root variables.tf: You’re saying “this is a variable I want to use in this project.”
 -  Module variables.tf: You’re saying “this module needs this variable to work.”
+
+
+
+Modular Terraform Lifecycle — Folder Structure
+```
+infra/terraform/
+├── main.tf                  # Root orchestrator
+├── terraform.tfvars         # Centralized variables
+├── variables.tf             # Root-level variable declarations
+├── Makefile                 # Command automation
+├── modules/
+│   ├── vpc/                 # VPC, subnets, NAT
+│   ├── iam/                 # IAM roles for EKS + GPU nodes
+│   ├── eks/                 # EKS control plane
+│   ├── gpu_node_group/      # GPU Spot node group (modular, teardown-ready)
+│   └── alb_irsa/            # IRSA role for ALB controller (optional)
+```
