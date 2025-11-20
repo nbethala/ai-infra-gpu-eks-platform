@@ -113,7 +113,7 @@ Deployed Triton on GPU nodes using your custom ECR image, with health probes, no
  - make deploy-triton (Add and update the Helm repo) 
  - make destroy-triton
 
-### step 3.3 Smoke test inference endpoint: 
+### step 3.4 Smoke test inference endpoint: 
 
  #### Helm + Port-Forward + Scripted Smoke Test
 This smoke test confirms that your Triton server is:
@@ -121,15 +121,24 @@ This smoke test confirms that your Triton server is:
  - Serving your ONNX model correctly
  - Accepting and responding to inference requests
 
-usage : 
- - setup triton/smoke-test-triton.sh
-  - setup triton/input.json (dummy pixel values — enough to validate model loading and endpoint behavior.)
-  - Add to : triton/Makefile 
-  - usage : run --> make smoke-test
+#### Manual method step-by-step smoke test
+1. Port-forward Triton service
+```
+kubectl port-forward svc/triton-infer 8000:8000 -n triton
+```
 
-Result : 
-Port-forward the Triton service
-Send a dummy inference request
-Print the output
-Kill the port-forward
+2. Prepare input.json ( run script triton/generate-input.py)
+3. Send Inference Request
+```
+curl -X POST http://localhost:8000/v2/models/resnet50/infer \
+  -H "Content-Type: application/json" \
+  -d @input.json
+```
+
+4. Confirm GPU Usage (Optional)
+```
+kubectl exec -it <triton-pod> -n triton -- nvidia-smi
+```
+#### Automated smoke test
+make smoke-test
 

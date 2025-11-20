@@ -1,3 +1,4 @@
+# The Helm chart accepts clean values YAML block - modern way of doing things !
 resource "helm_release" "nvidia_device_plugin" {
   name       = "nvidia-device-plugin"
   namespace  = "kube-system"
@@ -5,23 +6,14 @@ resource "helm_release" "nvidia_device_plugin" {
   chart      = "k8s-device-plugin"
   version    = "0.14.0"
 
-  set {
-    name  = "tolerations[0].key"
-    value = "gpu"
-  }
-
-  set {
-    name  = "tolerations[0].operator"
-    value = "Exists"
-  }
-
-  set {
-    name  = "tolerations[0].effect"
-    value = "NoSchedule"
-  }
-
-  set {
-    name  = "nodeSelector.accelerator"
-    value = "nvidia"
-  }
+  values = [yamlencode({
+    tolerations = [{
+      key      = "gpu"
+      operator = "Exists"
+      effect   = "NoSchedule"
+    }]
+    nodeSelector = {
+      accelerator = "nvidia"
+    }
+  })]
 }

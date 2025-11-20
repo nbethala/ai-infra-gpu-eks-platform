@@ -54,5 +54,8 @@ destroy-triton:
     helm uninstall triton-infer -n triton
 
 # ---------------------------triton smoke test -------------------
+generate-input:
+    python generate-input.py
+
 smoke-test:
     bash smoke-test-triton.sh

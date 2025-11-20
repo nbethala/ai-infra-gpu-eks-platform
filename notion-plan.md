@@ -28,14 +28,14 @@ x Taints: key=gpu, effect=NoSchedule # not needed yet
 [x] Package ONNX model (ResNet50 or MobileNet)
 [x] Build + push Triton Docker image to ECR (AWS)
 [x] Deploy Triton via Helm (with GPU scheduling + probes)
-[x]ALB ingress with HTTPS + health checks ( optional: if exposing dashboards extrenally then add an ALB ingress)
-☐ Smoke test inference endpoint
+[ ]ALB ingress with HTTPS + health checks ( optional: if exposing dashboards extrenally then add an ALB ingress)
+[x] Smoke test inference endpoint
 
 ## Stage 4: Observability Stack
-☐ Prometheus Operator via Helm
-☐ NVIDIA DCGM exporter for GPU metrics
-☐ Grafana dashboards (GPU, latency, throughput)
-☐ Annotate dashboards with “Load Test Start/Stop”
+x Prometheus Operator via Helm 
+x NVIDIA DCGM exporter for GPU metrics
+x Grafana dashboards (GPU, latency, throughput)
+x Smoke Test : Annotate dashboards with “Load Test Start/Stop”
 
 ## Stage 5: Synthetic Load Testing
 ☐ Define test scenarios (Smoke, Spike, Soak)

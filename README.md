@@ -83,4 +83,11 @@ Secure by default
 
 ## Triton : for model serving
  Triton is a powerful inference(making predictions) server that lets you easily deploy and run AI models at scale, using GPUs for fast inference.
- - Package ONNX model (ResNet50 or MobileNet)
+ - Package ONNX model (ResNet50 or MobileNet) 
+
+completed :  deploying a model  operationalizing inference:
+
+  - With GPU scheduling
+  - With health probes
+  - With endpoint validation
+  - With teardown hygiene
