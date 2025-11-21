@@ -139,6 +139,8 @@ Vertical lines: “Load Test Start” and “Load Test Stop”
 - Real-time, annotated load test against Triton — with metrics, dashboard markers
 - Purpose: Endpoint validation, GPU spike confirmation 
 
-## Stage 5: Synthetic Load Testing
-====================================
+## Stage 5: Synthetic Load Testing - Triton
+============================================
+This is performance validation — not just “does it work,” but “how well does it scale, recover, and behave under stress.”
+
 

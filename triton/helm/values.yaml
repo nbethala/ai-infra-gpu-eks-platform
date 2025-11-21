@@ -1,3 +1,5 @@
+#helm configuration blueprint for deploying the Triton Inference Server
+# pulls image from ECR and triggers GPU scheduling
 image:
   repository: <your-ecr-url>/triton-infer
   tag: latest

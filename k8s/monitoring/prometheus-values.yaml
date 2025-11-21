@@ -1,4 +1,4 @@
-#deploy prometheus operator
+#deploy prometheus operator via helm
 prometheus:
   prometheusSpec:
     serviceMonitorSelectorNilUsesHelmValues: false

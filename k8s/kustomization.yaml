@@ -1,0 +1,14 @@
+# Use kubectl apply -k k8s/ for full-stack deployment
+
+resources:
+  - base/namespace.yaml
+  - base/serviceaccount-triton.yaml
+  - base/role-triton.yaml
+  - base/rolebinding-triton.yaml
+  - triton/deployment.yaml
+  - triton/service.yaml
+  - triton/hpa.yaml
+  - monitoring/prometheus-values.yaml
+  - monitoring/dcgm-values.yaml
+  - monitoring/grafana-dashboard-configmap.yaml
+  - loadtest/locust-deployment.yaml

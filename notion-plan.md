@@ -37,7 +37,7 @@ x NVIDIA DCGM exporter for GPU metrics
 x Grafana dashboards (GPU, latency, throughput)
 x Smoke Test : Annotate dashboards with “Load Test Start/Stop”
 
-## Stage 5: Synthetic Load Testing
+## Stage 5: Synthetic Load Testing - All scripts Wired !! X
 ☐ Define test scenarios (Smoke, Spike, Soak)
 ☐ Run Locust/k6 headless (laptop or EC2)
 ☐ Capture latency, throughput, error %, GPU utilization

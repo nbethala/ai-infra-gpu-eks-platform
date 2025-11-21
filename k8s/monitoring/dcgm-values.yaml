@@ -1,4 +1,4 @@
-#GPU-aware deployment with tolerations:
+#Deploy NVIDIA DCGM exporter with tolerations
 tolerations:
   - key: "gpu"
     operator: "Exists"

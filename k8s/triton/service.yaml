@@ -1,0 +1,14 @@
+#Expose Triton for inference using ClusterIP or Load balancer
+apiVersion: v1
+kind: Service
+metadata:
+  name: triton-infer
+  namespace: triton
+spec:
+  selector:
+    app: triton
+  ports:
+    - protocol: TCP
+      port: 8000
+      targetPort: 8000
+  type: ClusterIP

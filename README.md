@@ -91,3 +91,22 @@ completed :  deploying a model  operationalizing inference:
   - With health probes
   - With endpoint validation
   - With teardown hygiene
+
+
+  Summary: Very Important Notes
+🔐 RBAC is mandatory for secure, scoped access — always pair ServiceAccount + Role + RoleBinding
+
+🧪 GPU scheduling needs nvidia.com/gpu limits and node labeling
+
+📊 Observability stack must be Helm-deployed with values files and dashboard ConfigMaps
+
+🚀 Load testing should be headless, automated, and annotated
+
+🧼 Teardown hygiene = namespaces + declarative manifests + Kustomize
+
+### k8s/base/secrets.yaml — Kubernetes Secret
+Always base64 encode values (echo -n "value" | base64)
+
+Use type: Opaque unless integrating with CSI or external secret stores
+
+Never commit secrets to Git — use .gitignore or external secret managers (e.g., AWS Secrets Manager via IRSA)
