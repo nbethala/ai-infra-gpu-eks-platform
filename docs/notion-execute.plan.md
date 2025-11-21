@@ -10,7 +10,7 @@ S3 read (if model artifacts are remote)
 
 ✅ Install dev tools:
 ✅ Docker, AWS CLI, Python, jq
-✅ create ECR to store triton images in artifact registry
+ ? create ECR to store triton images in artifact registry
 ✅ aws ecr get-login-password tested
 
 ✅ clone github repo for codebase
