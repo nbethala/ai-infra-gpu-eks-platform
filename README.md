@@ -1,32 +1,23 @@
-# GPU-accelerated ML inference platform on AWS EKS with modular architecture and observability
-Gpu-ready ml inference platform on aws eks 
+# GPU-Accelerated ML Inference Platform on AWS EKS
 
-Goal: Build, test, deploy, and teardown a cost-aware GPU inference stack on EKS. 
+This project demonstrates a **modular, production-grade architecture** for serving machine learning models at scale using **NVIDIA Triton Inference Server** on **AWS Elastic Kubernetes Service (EKS)**.
 
-## Step 0 : Preliminary setup 
+## 🚀 What It Does
+- Runs ML models (e.g., ResNet50) on **GPU nodes** for high-throughput, low-latency inference.
+- Uses **private subnets with NAT Gateway** for secure networking.
+- Provides **observability** with Prometheus, DCGM exporter, and Grafana dashboards.
+- Codified with **Terraform + Helm** for reproducibility, teardown hygiene, and cost control.
 
-### Identity and Access Management (IAM)
-Strong identity boundaries are the backbone of secure cloud platforms — especially when you're running GPU workloads at scale. This project follows a **least-privilege, no static keys** approach across three key roles:
+## 🛠 Key Components
+- **Triton Inference Server** → Core engine for serving models (ONNX, PyTorch, TensorFlow).
+- **API Gateway / Ingress** → Routes client requests into the cluster.
+- **Observability Stack** → Real-time metrics on GPU utilization, latency, and errors.
+- **CI/CD Ready** → Modular design for automated model deployment pipelines.
 
-### Human Operator  
-Used for occasional manual access — like debugging, validating deployments, or handling incidents.  
-- **Secured with MFA**  
-- **Short-lived sessions only**  
-- No long-term credentials, ever.
+## ✅ Outcome
+A secure, scalable, and observable ML inference platform that bridges the gap between **research models** and **enterprise deployment**.
 
-### CI/CD Automation  
-This is how code gets deployed — safely and automatically.  
-- **GitHub OIDC federation** replaces static AWS keys  
-- Used by GitHub Actions to run Terraform, Helm, and deploy workloads  
-- Scoped tightly to what the pipeline actually needs
-
-### In-Cluster Controller  
-This is how your inference pods talk to AWS services like S3 or CloudWatch — from inside Kubernetes.  
-- Uses **IRSA (IAM Roles for Service Accounts)**  
-- No secrets in containers  
-- Each pod gets just the access it needs, nothing more
-
-## Step  : Infrastructure Setup via Terraform
+##  Infrastructure Setup via Terraform
 
 ### Setup VPC : The VPC is segmented into public and private subnets across two availability zones. Public subnets route outbound traffic via an Internet Gateway, hosting ingress resources like ALBs. Private subnets route outbound traffic via a NAT Gateway, hosting GPU workloads shielded from direct internet exposure. This design demonstrates secure egress and network segmentation.
 
@@ -83,7 +74,13 @@ Secure by default
 
 ## Triton : for model serving
  Triton is a powerful inference(making predictions) server that lets you easily deploy and run AI models at scale, using GPUs for fast inference.
- - Package ONNX model (ResNet50 or MobileNet) 
+ - Package ONNX model (ResNet50 or MobileNet)  
+
+Docker Build : 
+Load a ResNet‑50 ONNX model.
+Accept batches of up to 8 RGB images (224×224).
+Output a 1000‑dimensional vector (ImageNet classes).
+Run inference on GPU using ONNX Runtime.
 
 completed :  deploying a model  operationalizing inference:
 
@@ -109,4 +106,52 @@ Always base64 encode values (echo -n "value" | base64)
 
 Use type: Opaque unless integrating with CSI or external secret stores
 
-Never commit secrets to Git — use .gitignore or external secret managers (e.g., AWS Secrets Manager via IRSA)
+Never commit secrets to Git — use .gitignore or external secret managers (e.g., AWS Secrets Manager via IRSA) 
+
+#### How to Read the Flow
+- EC2‑dev (default VPC) → builds Docker images and pushes them to ECR.
+- Terraform modules (VPC, IAM, EKS, GPU node group) → spin up a new VPC with an EKS cluster and GPU nodes (g4dn.xlarge).
+- NVIDIA plugin (Helm) → enables GPU scheduling inside Kubernetes.
+- Triton Inference Server → runs on GPU nodes, pulling images from ECR.
+- Observability stack (Prometheus/Grafana/DCGM exporter) → monitors GPU utilization and cost impact.
+- IAM roles → secure access to ECR, SSM, and S3 without static keys.
+
+### Triton Inference : GPU 
+
+## 🏗️ Architecture: Triton in the ML Inference Platform
+
+Client (App / Service / User)
+        │
+        ▼
+API Gateway / Ingress
+        │
+        ▼
+Kubernetes Service (EKS)
+        │
+        ▼
+Triton Inference Server Pod
+   ├── Model Repository (/models)
+   ├── ONNX / PyTorch / TensorFlow models
+   └── Configs (config.pbtxt)
+        │
+        ▼
+GPU Node (AWS EC2 with NVIDIA GPUs)
+        │
+        ▼
+Inference Results (HTTP/gRPC Response)
+
+---
+
+## 🔎 Observability Layer
+- **Prometheus** → scrapes Triton + GPU metrics (latency, throughput, utilization).
+- **DCGM Exporter** → exposes GPU health and performance data.
+- **Grafana Dashboards** → visualize inference performance, GPU usage, errors.
+
+---
+
+## ✅ Flow Summary
+1. Clients send inference requests (HTTP/gRPC).
+2. Gateway routes requests into EKS.
+3. Triton loads models from `/models` and executes inference on GPU.
+4. Results are returned to clients.
+5. Observability stack monitors everything in real time.

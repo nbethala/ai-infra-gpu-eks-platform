@@ -3,8 +3,8 @@ resource "helm_release" "nvidia_device_plugin" {
   name       = "nvidia-device-plugin"
   namespace  = "kube-system"
   repository = "https://nvidia.github.io/k8s-device-plugin"
-  chart      = "k8s-device-plugin"
-  version    = "0.14.0"
+  chart      = "nvidia-device-plugin"
+  version    = "0.17.1"
 
   values = [yamlencode({
     tolerations = [{
