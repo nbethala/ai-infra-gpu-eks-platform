@@ -1,0 +1,28 @@
+#Run synthetic load tests in-cluster (mounted locustfile.py)
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: locust-runner
+  namespace: loadtest
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: locust
+  template:
+    metadata:
+      labels:
+        app: locust
+    spec:
+      containers:
+        - name: locust
+          image: locustio/locust
+          args: ["-f", "/mnt/locustfile.py", "--headless", "-u", "50", "-r", "5", "-t", "2m"]
+          volumeMounts:
+            - name: locustfile
+              mountPath: /mnt
+      volumes:
+        - name: locustfile
+          configMap:
+            name: locustfile-config

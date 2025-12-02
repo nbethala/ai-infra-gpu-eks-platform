@@ -1,0 +1,10 @@
+# Global configmap : centralize non-sensitive values( model repo path, env flags, logging levels)
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: global-config
+  namespace: triton
+data:
+  MODEL_REPO_PATH: /models
+  LOG_LEVEL: INFO
+  ENV: dev

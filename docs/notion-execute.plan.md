@@ -42,8 +42,14 @@ aws ecr describe-images --repository-name triton-infer --region us-east-1
 
 ✅ Stage 3: Schedule GPU Pod in EKS
 
-### Prep gpu node : 
-  - disable swap
+### Prep gpu node :
+ -  nvidia-smi (GPU health and usage monitor.) 
+ -  NVIDIA Container Toolkit
+ - docker 
+ - triton server 
+ -  
+
+  - disable swap - sudo swapoff -a
   - install NVIDIA drivers (the kernel module will allow the OS to talk to the GPU hardware. Without this the GPU is invisible to the system)
   ```
   sudo apt update && sudo apt install -y build-essential dkms
@@ -72,18 +78,47 @@ GPU: Tesla T4, 15 GB VRAM
 Status: Idle, no processes yet
 
 # ----------------------------------------------
-### Spin Triton Server 
+### Spin Triton Server - this will download the triton server to the cache 
 ```
 docker run --rm --gpus all -p8000:8000 -p8001:8001 -p8002:8002 \
   nvcr.io/nvidia/tritonserver:23.10-py3 tritonserver --help
 ```
 
+### Inference the models
+sudo docker run --rm --gpus all \
+  -p8000:8000 -p8001:8001 -p8002:8002 \
+  -v /home/ubuntu/models:/models \
+  nvcr.io/nvidia/tritonserver:23.10-py3 \
+  tritonserver --model-repository=/models
 
+  #### Build sequence 
+   - First install triton then build the docker Image using Dockerfile
+   - Then run with gpu support : 
+   - docker run --rm --gpus all -p8000:8000 -p8001:8001 -p8002:8002 triton-infer:latest
 
+    - Test readiness: 
+     - curl -v localhost:8000/v2/health/ready
 
+docker build command with TAG : docker build -t triton-infer:latest -f services/triton/Dockerfile .
 
+### No disk space . dont bild just run Triton image directly : 
+docker run --rm --gpus all \
+  -p8000:8000 -p8001:8001 -p8002:8002 \
+  -v /home/ubuntu/services/triton/models:/models \
+  nvcr.io/nvidia/tritonserver:24.01-py3 \
+  tritonserver --model-repository=/models
 
+#### Test using curl : 
+✅ Services Started
+GRPCInferenceService → listening on 0.0.0.0:8001
+HTTPService (REST API) → listening on 0.0.0.0:8000
+Metrics Service (Prometheus) → listening on 0.0.0.0:8002
 
+This means:
+You can send REST requests to http://<server-ip>:8000/v2/...
+You can send gRPC requests to <server-ip>:8001
+You can scrape metrics from <server-ip>:8002/metrics
+##=====================================================
 
 bash
 kubectl label node <gpu-node-name> accelerator=nvidia
@@ -160,3 +195,27 @@ curl -X POST http://localhost:8000/v2/models/resnet50/infer ...
 [ ] kubectl delete ns triton
 [ ] Stop or terminate EC2 instance
 [ ] Clean up ECR image (optional)
+
+## =================================================
+
+###Nvidia-smi 
+
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 580.95.05              Driver Version: 580.95.05      CUDA Version: 13.0     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  Tesla T4                       On  |   00000000:00:1E.0 Off |                    0 |
+| N/A   24C    P8              9W /   70W |       0MiB /  15360MiB |      0%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+

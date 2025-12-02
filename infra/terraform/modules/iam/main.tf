@@ -1,6 +1,8 @@
 # -----------------------------
 # Operator Role
 # -----------------------------
+data "aws_caller_identity" "current" {}
+
 resource "aws_iam_role" "operator" {
   name = "NancyOperatorRole"
 
@@ -142,6 +144,11 @@ resource "aws_iam_role" "eks_node_role" {
 resource "aws_iam_role_policy_attachment" "eks_worker_node" {
   role       = aws_iam_role.eks_node_role.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
+}
+
+resource "aws_iam_role_policy_attachment" "eks_cni" {
+  role       = aws_iam_role.eks_node_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
 }
 
 resource "aws_iam_role_policy_attachment" "ecr_readonly" {

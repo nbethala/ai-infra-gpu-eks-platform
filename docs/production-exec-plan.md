@@ -10,6 +10,15 @@ terraform apply -var-file=dev.tfvars
 
 #Verify:
 kubectl get nodes -l accelerator=nvidia
+
+#check node group status to verify its healthy
+aws eks describe-nodegroup \
+  --cluster-name gpu-e2e-cluster \
+  --nodegroup-name gpu-e2e-cluster-gpu-spot
+
+kubectl get nodes -o wide
+
+
 ```
 
 Result: 

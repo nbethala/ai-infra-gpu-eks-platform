@@ -1,0 +1,61 @@
+
+#. check env before loading environment
+check-env:
+    @echo "AWS_ACCOUNT_ID=$(AWS_ACCOUNT_ID)"
+    @echo "AWS_REGION=$(AWS_REGION)"
+    @echo "ECR_REPO=$(ECR_REPO)"
+    @echo "IMAGE_TAG=$(IMAGE_TAG)"
+
+# ----------- CONFIG -----------
+# Load .env if present
+include .env
+export
+
+IMAGE_NAME := $(AWS_ACCOUNT_ID).dkr.ecr.$(AWS_REGION).amazonaws.com/$(ECR_REPO):$(IMAGE_TAG)
+
+# ----------- TARGETS -----------
+
+.PHONY: build-triton push-triton login-ecr create-ecr clean
+
+build-triton:
+    docker build -t triton-infer ./triton
+
+tag-triton:
+    docker tag triton-infer $(IMAGE_NAME)
+
+login-ecr:
+    aws ecr get-login-password --region $(AWS_REGION) | \
+    docker login --username AWS --password-stdin $(AWS_ACCOUNT_ID).dkr.ecr.$(AWS_REGION).amazonaws.com
+
+create-ecr:
+    aws ecr describe-repositories --repository-names $(ECR_REPO) || \
+    aws ecr create-repository --repository-name $(ECR_REPO)
+
+push-triton: login-ecr create-ecr build-triton tag-triton
+    docker push $(IMAGE_NAME)
+
+clean:
+    docker rmi triton-infer || true
+    docker rmi $(IMAGE_NAME) || true
+
+# -----------------------initialize helm-----------------------
+init-helm:
+    helm repo add nvcr https://helm.ngc.nvidia.com/nvcr || true
+    helm repo update
+
+# --------------------------triton deployment/destroy via helm -----------
+deploy-triton: init-helm
+    helm upgrade --install triton-infer nvcr/triton-inference-server \
+      --namespace triton \
+      --create-namespace \
+      -f helm/values.yaml
+
+destroy-triton:
+    helm uninstall triton-infer -n triton
+
+# ---------------------------triton smoke test -------------------
+generate-input:
+    python generate-input.py
+
+smoke-test:
+    bash smoke-test-triton.sh

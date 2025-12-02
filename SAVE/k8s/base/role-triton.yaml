@@ -1,0 +1,10 @@
+#Define what Triton can access: Read-only access to pods/services
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: triton-role
+  namespace: triton
+rules:
+  - apiGroups: [""]
+    resources: ["pods", "services"]
+    verbs: ["get", "list", "watch"]

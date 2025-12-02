@@ -1,0 +1,11 @@
+#Deploy NVIDIA DCGM exporter with tolerations
+tolerations:
+  - key: "gpu"
+    operator: "Exists"
+    effect: "NoSchedule"
+
+resources:
+  limits:
+    nvidia.com/gpu: 1
+    memory: 256Mi
+    cpu: 100m

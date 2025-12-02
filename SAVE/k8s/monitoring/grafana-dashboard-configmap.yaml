@@ -1,0 +1,11 @@
+#Grafana dashboard auto-provisioning via ConfigMap
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboard-gpu
+  namespace: monitoring
+  labels:
+    grafana_dashboard: "1"
+data:
+  gpu-dashboard.json: |
+    {{- (.Files.Get "observability/grafana-dashboards/gpu-dashboard.json") | nindent 4 }}

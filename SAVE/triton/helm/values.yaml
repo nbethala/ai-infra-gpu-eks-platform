@@ -1,0 +1,41 @@
+#helm configuration blueprint for deploying the Triton Inference Server
+# pulls image from ECR and triggers GPU scheduling
+image:
+  repository: <your-ecr-url>/triton-infer
+  tag: latest
+  pullPolicy: Always
+
+resources:
+  limits:
+    nvidia.com/gpu: 1
+    cpu: 1
+    memory: 2Gi
+  requests:
+    cpu: 500m
+    memory: 1Gi
+
+nodeSelector:
+  accelerator: nvidia
+
+tolerations:
+  - key: "gpu"
+    operator: "Exists"
+    effect: "NoSchedule"
+
+livenessProbe:
+  httpGet:
+    path: /v2/health/live
+    port: 8000
+  initialDelaySeconds: 10
+  periodSeconds: 30
+
+readinessProbe:
+  httpGet:
+    path: /v2/health/ready
+    port: 8000
+  initialDelaySeconds: 10
+  periodSeconds: 30
+
+service:
+  type: ClusterIP
+  port: 8000
